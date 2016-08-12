@@ -1,3 +1,10 @@
+*   Sqlite3 migrations can now be successfully rolled back when the column
+    an invalid column type was specified.
+
+    Fixes #26087
+
+    *Travis O'Neill*
+    
 *   Hashes can once again be passed to setters of `composed_of`, if all of the
     mapping methods are methods implemented on `Hash`.
 

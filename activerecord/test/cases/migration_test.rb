@@ -309,6 +309,21 @@ class MigrationTest < ActiveRecord::TestCase
         "On error, the Migrator should revert schema changes but it did not."
     end
 
+    def test_allows_sqlite3_rollback_on_invalid_column_type
+      if current_adapter?(:SQLite3Adapter)
+        Person.connection.create_table :something, force: true do |t|
+          t.column :number, :integer
+          t.column :name, :string
+          t.column :foo, :bar
+        end
+        assert Person.connection.column_exists?(:something, :foo)
+        assert_nothing_raised { Person.connection.remove_column :something, :foo, :bar }
+        assert !Person.connection.column_exists?(:something, :foo)
+        assert Person.connection.column_exists?(:something, :name)
+        assert Person.connection.column_exists?(:something, :number)
+      end
+    end
+
     def test_migration_without_transaction
       assert_no_column Person, :last_name
 
